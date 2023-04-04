@@ -66,7 +66,7 @@ class UserClass:
         # Generate Token
         token = self.generate_auth_token(user)
         token.set_exp(lifetime=timedelta(minutes=5))
-        print(user_email)
+
         # Send Reset link to email with token
         send_to_email = send_reset_password_link(token=token, email=email)
 
