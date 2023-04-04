@@ -6,6 +6,7 @@ from .models import User, Otp
 from rest_framework_simplejwt.tokens import AccessToken
 from django.contrib.auth.hashers import check_password
 from django.utils import timezone
+from taskbolt.senders import send_email
 
 class UserClass:
 
@@ -55,19 +56,17 @@ class UserClass:
 
     def forgot_password(self, data):
         email = data['email']
+        user_email = email
         user = self.get_user_by_email(email)
 
         # Create OTP
         user_otp = OTP()
-        generated_otp = user_otp.generate_otp()
-
-        # Set OTP in OTP models
-        set_otp = user_otp.store_otp(user)
+        generated_otp = user_otp.generate_otp(user)
 
         # Generate Token
         token = self.generate_auth_token(user)
         token.set_exp(lifetime=timedelta(minutes=5))
-
+        print(user_email)
         # Send Reset link to email with token
         send_to_email = send_reset_password_link(token=token, email=email)
 
@@ -82,7 +81,7 @@ class UserClass:
 
         # Use id to get user
         user = self.get_user_by_id(user_id)
-        print(user.otp.status)
+
         # Get the OTP from the USER->OTP models
         # If OTP has expired return OTP expired
         if user.otp.status:
@@ -92,18 +91,34 @@ class UserClass:
         user.password = data['password']
         user.save()
 
-        otp = Otp.objects.get(user=user.id)
+        # Change OTP status to True
+        otp = OTP()
+        otp.get_otp_row(user)
         otp.status = True
         otp.save()
 
         
 class OTP:
 
-    def generate_otp(self):
+    def get_otp_row(self, user):
+        otp = Otp.objects.get(user=user.id)
+        return otp
+
+    def generate_otp(self, user):
         self.otp = str(random.randint(10000, 99999))
+        self.store_otp(user)
+        return self.otp
     
     def store_otp(self, user):
         '''Stores OTP linked with user model!'''
         set_otp = Otp(user=user, otp_value=self.otp, created_at=timezone.now())
         set_otp.status = False
         set_otp.save()
+    
+    def send_otp_to_email(self, email):
+        print(email)
+        subject = 'One-Time Password for TaskBolt⚡️'
+        message = f"Your One Time Password is {self.otp}. It will expire in 5(five) minutes"
+
+        send_email(subject=subject, recipient=email, message=message)
+        return True

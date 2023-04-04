@@ -2,7 +2,7 @@
 from datetime import datetime
 import os
 import jwt
-from taskbolt.senders import send_reset_password_link_email
+from taskbolt.senders import send_email
 from dotenv import load_dotenv
 from taskbolt.errors import UserError
 
@@ -10,11 +10,10 @@ load_dotenv()
 
 
 def send_reset_password_link(token:str, email:str):
-    subject = "TaskBolt⚡️ Reset Password"
-    recipient = email,
+    subject = "TaskBolt⚡️ Reset Password",
     message = f"<p>Your reset password link is <a href='{os.getenv('RESET_PASSWORD_URL')}/reset_password?token={token}'>Reset Password</a>. It will expire in 5(five) minutes</p>"
 
-    send_email = send_reset_password_link_email(subject=subject, recipient=recipient, message=message)
+    send_email(subject=subject, recipient=email, message=message)
 
     return True
 

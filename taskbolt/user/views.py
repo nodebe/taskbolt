@@ -1,7 +1,7 @@
 from taskbolt.schemas import ErrorResponse, SuccessResponse
 from taskbolt.errors import UserError
 from django.http import JsonResponse
-from .classes import UserClass
+from .classes import OTP, UserClass
 from .schemas import UserIDSchema, UserLoginSchema, UserRegisterSchema, UserDataSchema, ForgotPasswordSchema, ResetPasswordSchema
 from ninja import Router
 
@@ -100,6 +100,40 @@ def resetpassword(request, payload:ResetPasswordSchema):
         # Serialize the response to return the created user id
         response = SuccessResponse(
             msg='Password reset successful!',
+        )
+
+    except UserError as e:
+        response = ErrorResponse(
+            msg=str(e)
+        ).dict()
+        return JsonResponse(response, status=e.code)
+
+    except Exception as e:
+        response = ErrorResponse(
+            msg=str(e)
+        ).dict()
+        return JsonResponse(response, status='500')
+
+    return JsonResponse(response.dict(), status='200')
+
+@router.post('/registerotp')
+def registerotp(request, payload:UserIDSchema):
+    data = payload.dict()
+
+    try:
+        user_object = UserClass()
+        user = user_object.get_user_by_id(id=data['id'])
+
+        if user == None:
+            raise UserError('User not found', '404')
+
+        otp_object = OTP()
+        otp = otp_object.generate_otp(user)
+        otp_object.send_otp_to_email(user.email)
+
+        # Serialize the response to return the created user id
+        response = SuccessResponse(
+            msg='One-Time Password sent successfully!',
         )
 
     except UserError as e:

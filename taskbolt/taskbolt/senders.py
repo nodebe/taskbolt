@@ -6,11 +6,11 @@ from .errors import UserError
 
 load_dotenv()
 
-def send_reset_password_link_email(subject, recipient:str, message):
+def send_email(subject, recipient:str, message):
     try:
         send_mail(
             subject = subject,
-            recipient_list = list(recipient),
+            recipient_list = [recipient],
             message = '',
             from_email = os.environ.get('DEFAULT_FROM_EMAIL'),
             html_message=message
