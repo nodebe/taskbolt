@@ -2,7 +2,7 @@ from taskbolt.schemas import ErrorResponse, SuccessResponse
 from taskbolt.errors import UserError
 from django.http import JsonResponse
 from .classes import OTP, UserClass
-from .schemas import UserIDSchema, UserLoginSchema, UserRegisterSchema, UserDataSchema, ForgotPasswordSchema, ResetPasswordSchema
+from .schemas import UserIDSchema, UserLoginSchema, UserRegisterSchema, UserDataSchema, ForgotPasswordSchema, ResetPasswordSchema, VerifyOTPSchema
 from ninja import Router
 
 
@@ -39,6 +39,16 @@ def login(request, payload:UserLoginSchema):
         user_object = UserClass()
         login_user = user_object.login_user(data)
         access_token = str(login_user['token'])
+
+        if login_user['data'].verified == False:
+            response = ErrorResponse(
+                code='E01',
+                data=UserIDSchema(
+                    **login_user['data'].__dict__
+                ),
+                msg='User not verified!'
+            ).dict()
+            return JsonResponse(response, status='401')
 
         # Serialize the response to return the created user id
         response = SuccessResponse(
@@ -134,6 +144,48 @@ def registerotp(request, payload:UserIDSchema):
         # Serialize the response to return the created user id
         response = SuccessResponse(
             msg='One-Time Password sent successfully!',
+        )
+
+    except UserError as e:
+        response = ErrorResponse(
+            msg=str(e)
+        ).dict()
+        return JsonResponse(response, status=e.code)
+
+    except Exception as e:
+        response = ErrorResponse(
+            msg=str(e)
+        ).dict()
+        return JsonResponse(response, status='500')
+
+    return JsonResponse(response.dict(), status='200')
+
+@router.post('/verifyotp')
+def verifyotp(request, payload:VerifyOTPSchema):
+    data = payload.dict()
+
+    try:
+        user_object = UserClass()
+        user = user_object.get_user_by_id(id=data['id'])
+
+        if user == None:
+            raise UserError('User not found', '404')
+
+        otp_object = OTP()
+        otp_object.verify_otp(user, data['otp'])
+
+        user_data = {
+            'data': user,
+            'token': str(user_object.generate_auth_token(user))
+        }
+
+        # Serialize the response to return the created user id
+        response = SuccessResponse(
+            data=UserDataSchema(
+                **user_data['data'].__dict__,
+                token = user_data['token']
+            ),
+            msg='User verification successfully!',
         )
 
     except UserError as e:

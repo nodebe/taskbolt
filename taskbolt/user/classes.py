@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime as dt
 import random
 from taskbolt.errors import UserError
 from .utils import is_access_token_valid, send_reset_password_link
@@ -56,7 +56,6 @@ class UserClass:
 
     def forgot_password(self, data):
         email = data['email']
-        user_email = email
         user = self.get_user_by_email(email)
 
         # Create OTP
@@ -73,7 +72,7 @@ class UserClass:
         return True
         
     def reset_password(self, data):
-        # Check if access token is valid / 
+        # Check if access token is valid
         token_validity_check = is_access_token_valid(access_token=data['token'])
 
         # When Link is visited use access token to get id
@@ -92,10 +91,8 @@ class UserClass:
         user.save()
 
         # Change OTP status to True
-        otp = OTP()
-        otp.get_otp_row(user)
-        otp.status = True
-        otp.save()
+        user.otp.status = True
+        user.otp.save()
 
         
 class OTP:
@@ -116,9 +113,38 @@ class OTP:
         set_otp.save()
     
     def send_otp_to_email(self, email):
-        print(email)
         subject = 'One-Time Password for TaskBolt⚡️'
         message = f"Your One Time Password is {self.otp}. It will expire in 5(five) minutes"
 
         send_email(subject=subject, recipient=email, message=message)
+        return True
+
+    def verify_otp(self, user, otp):
+        '''Verify the otp of user if valid and correct'''
+        if user.verified:
+            raise UserError('User already verified!', '400')
+        self.check_otp_values(input_otp=otp, user_otp=user.otp.otp_value)
+        self.check_time_validity(user.otp.created_at)
+
+        user.verified = True
+        user.otp.status = True
+        user.otp.save()
+        user.save()
+
+    
+    def check_otp_values(self, input_otp, user_otp):
+        if input_otp != user_otp:
+            raise UserError('Wrong OTP!', '401')
+        return True
+    
+    def check_time_validity(self, otp_time_created):
+        created_at = otp_time_created
+        current_time = dt.now(timezone.utc)
+
+        time_difference = current_time - created_at
+        time_difference_minutes = time_difference.seconds / 60
+
+        if time_difference_minutes > 5:
+            raise UserError('OTP expired!', '401')
+        
         return True

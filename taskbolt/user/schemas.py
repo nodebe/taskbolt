@@ -51,6 +51,7 @@ class UserDataSchema(Schema):
     username: str
     firstname: str
     lastname: str
+    verified: bool
     token: Optional[str]
 
 class ForgotPasswordSchema(Schema):
@@ -83,3 +84,7 @@ class ResetPasswordSchema(Schema):
         
         hashed_password = make_password(v)
         return hashed_password
+
+class VerifyOTPSchema(Schema):
+    id: str
+    otp: int = Field(min=10000, max=99999)
