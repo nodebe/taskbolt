@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from datetime import timedelta
+import json
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -49,9 +50,11 @@ INSTALLED_APPS = [
     # 3rd Party
     'rest_framework',
     'rest_framework_simplejwt',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -163,3 +166,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+
+# Cors Headers Setup
+CORS_ALLOW_ALL_ORIGINS = os.environ.get('ALLOW_ALL_ORIGINS')
+CORS_ALLOWED_ORIGINS = json.loads(os.environ.get('ALLOWED_ORIGIN_LIST'))
