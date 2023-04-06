@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from datetime import timedelta
-import json
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -169,4 +168,4 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 
 # Cors Headers Setup
 CORS_ALLOW_ALL_ORIGINS = os.environ.get('ALLOW_ALL_ORIGINS')
-CORS_ALLOWED_ORIGINS = json.loads(os.environ.get('ALLOWED_ORIGIN_LIST'))
+CORS_ALLOWED_ORIGINS = []
