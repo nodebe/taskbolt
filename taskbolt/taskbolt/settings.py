@@ -28,11 +28,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG_STATE')
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    'a579-105-112-124-76.ngrok-free.app',
-    'taskbolt-production.up.railway.app'
+    '*'
 ]
 
 
