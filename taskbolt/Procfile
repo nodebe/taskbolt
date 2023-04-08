@@ -1,1 +1,1 @@
-web:gunicorn taskbolt:wsgi --log-file -
+web:gunicorn taskbolt:wsgi
