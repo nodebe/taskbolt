@@ -84,6 +84,7 @@ class UserClass:
         # Get the OTP from the USER->OTP models
         # If OTP has expired return OTP expired
         if user.otp.status:
+            print('here agail')
             raise UserError('Token Expired!', '401')
         
         # Save new password

@@ -22,7 +22,7 @@ def is_access_token_valid(access_token) -> str:
     try:
         payload = jwt.decode(access_token, verify=True, key=os.environ.get('SECRET_KEY'), algorithms=['HS256'])
     except jwt.exceptions.DecodeError:
-        raise UserError('str(e)', '401')
+        raise UserError('Invalid Token', '401')
 
     # check if the token has expired
     exp_timestamp = payload.get('exp')
