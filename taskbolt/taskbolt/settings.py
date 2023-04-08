@@ -31,7 +31,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG_STATE')
 
 ALLOWED_HOSTS = [
-    '60d0-105-112-124-76.eu.ngrok.io'
+    'a579-105-112-124-76.ngrok-free.app',
+    'taskbolt-production.up.railway.app'
 ]
 
 
