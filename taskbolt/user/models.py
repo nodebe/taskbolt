@@ -10,7 +10,7 @@ class User(models.Model):
     username = models.CharField(max_length=40, null=False)
     password = models.CharField(max_length=120, null=False)
     verified = models.BooleanField(default=False)
-    date_of_joining = models.DateTimeField(auto_now_add=True)
+    joined_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
         if not self.id:
