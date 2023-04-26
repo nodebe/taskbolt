@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     # Local
     'user.apps.UserConfig',
     'project.apps.ProjectConfig',
+    'section.apps.SectionConfig',
 
     # 3rd Party
     'rest_framework',

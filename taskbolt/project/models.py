@@ -28,14 +28,6 @@ class Project(models.Model):
         super().save(*args, **kwargs)
 
 
-class ProjectSection(models.Model):
-    title = models.CharField(max_length=15, null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    # Relationships
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-
-
 class ProjectMemberStatus(models.Model):
     status = models.CharField(max_length=7, null=False)
     created_at = models.DateTimeField(auto_now_add=True)

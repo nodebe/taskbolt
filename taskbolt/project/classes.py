@@ -11,8 +11,8 @@ class ProjectClass:
 
         return self.project
 
-    def get_project_member(self, user):
-        membership = ProjectMember.objects.filter(project=self.project, user=user).first()
+    def get_project_member(self, project, user):
+        membership = ProjectMember.objects.filter(project=project, user=user).first()
 
         return membership
 
@@ -56,12 +56,12 @@ class ProjectClass:
         return status
     
     def activate_member_invite(self, user):
-        membership = self.get_project_member(user)
+        membership = self.get_project_member(self.project, user)
         membership.invite_status = self.set_project_invite_status(2)
         membership.save()
     
     def decline_member_invite(self, user):
-        membership = self.get_project_member(user)
+        membership = self.get_project_member(self.project, user)
         membership.invite_status = self.set_project_invite_status(3)
         membership.save()
 
@@ -82,13 +82,13 @@ class ProjectClass:
 
     def make_member_admin(self, user):
         # Get the user from the ProjectMember model and change the member status
-        membership = self.get_project_member(user)
+        membership = self.get_project_member(self.project, user)
         membership.member_status = self.set_member_status(1)
         membership.save()
     
     def make_admin_member(self, user):
         # Get the user from the ProjectMember model and change the member status
-        membership = self.get_project_member(user)
+        membership = self.get_project_member(self.project, user)
         # Check if there is another admin.
         # Write code here
         
