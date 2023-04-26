@@ -8,10 +8,13 @@ class ProjectStatus(models.Model):
     status = models.CharField(max_length=9, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.status
+
 
 class Project(models.Model):
     id = models.CharField(max_length=36, primary_key=True, null=False)
-    title = models.CharField(max_length=50, null=False)
+    name = models.CharField(max_length=50, null=False)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -37,15 +40,21 @@ class ProjectMemberStatus(models.Model):
     status = models.CharField(max_length=7, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.status
+
 
 class ProjectInviteStatus(models.Model):
     status = models.CharField(max_length=9, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.status
+
 
 class ProjectMember(models.Model):
     invited_at = models.DateTimeField(auto_now_add=True)
-    responded_at = models.DateTimeField()
+    responded_at = models.DateTimeField(null=True)
 
     # Relationships
     project = models.ForeignKey(Project, on_delete=models.CASCADE)

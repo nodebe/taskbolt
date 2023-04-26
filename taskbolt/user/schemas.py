@@ -2,7 +2,6 @@ from typing import Optional
 from ninja import Schema, Field
 from password_validator import PasswordValidator
 from pydantic import validator, EmailStr
-from passlib.hash import pbkdf2_sha256 as sha256
 from django.contrib.auth.hashers import make_password
 
 from .models import User

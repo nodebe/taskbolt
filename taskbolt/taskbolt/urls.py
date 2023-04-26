@@ -16,11 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from user.views import router as user_router
+from project.views import router as project_router
 from ninja import NinjaAPI
 
 
 api = NinjaAPI()
 api.add_router('/users/', user_router, tags=['User'])
+api.add_router('/project/', project_router, tags=['Project'])
 
 urlpatterns = [
     path('admin/', admin.site.urls),
