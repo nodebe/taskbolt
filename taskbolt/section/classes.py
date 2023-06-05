@@ -35,7 +35,7 @@ class SectionClass:
         user = self.get_user(user_id)
         
         # Validate that member creating section is an active member of the project
-        self.validate_member_to_create_section(project, user)
+        self.validate_member_for_section(project, user)
        
         # Create a Project model instance in the data dictionary
         data['project'] = project
@@ -46,11 +46,16 @@ class SectionClass:
 
         return section
 
-    def validate_member_to_create_section(self, project, user):
+    def validate_member_for_section(self, project, user):
         find_project_member = self.project_obj.get_project_member(project, user)
 
         if find_project_member:
             if find_project_member.invite_status.id != 2:
-                raise UserError('Unauthorised Action! You are not member of this project!', '401')
+                raise UserError('Unauthorised Action! You are not a member of this project!', '400')
         else:
-            raise UserError('Unauthorised Action! You are not member of this project!', '401')
+            raise UserError('Unauthorised Action! You are not a member of this project!', '400')
+
+    def get_project_sections(self, project):
+        sections = ProjectSection.objects.filter(project=project).all()
+
+        return sections

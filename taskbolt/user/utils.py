@@ -18,17 +18,17 @@ def send_reset_password_link(token:str, email:str):
     return True
 
 
-def is_access_token_valid(access_token) -> str:
+def is_access_token_valid(access_token:str) -> str:
     try:
-        payload = jwt.decode(access_token, verify=True, key=os.environ.get('SECRET_KEY'), algorithms=['HS256'])
+        payload = jwt.decode(str(access_token), verify=True, key=os.environ.get('SECRET_KEY'), algorithms=['HS256'])
     except jwt.exceptions.DecodeError:
-        raise UserError('Invalid Token', '401')
+        raise UserError('Invalid Token!', '400')
 
     # check if the token has expired
     exp_timestamp = payload.get('exp')
     if exp_timestamp is not None:
         exp_datetime = datetime.fromtimestamp(exp_timestamp)
         if datetime.now() > exp_datetime:
-            raise UserError('Expired Token', '401')
+            raise UserError('Expired Token!', '400')
     
     return payload['user_id']

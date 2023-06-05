@@ -1,4 +1,4 @@
-from taskbolt.errors import ServerError
+from taskbolt.errors import ServerError, UserError
 from user.classes import UserClass
 from .models import Project, ProjectInviteStatus, ProjectMember, ProjectMemberStatus, ProjectStatus
 from user.models import User
@@ -107,3 +107,14 @@ class ProjectClass:
         
         membership.member_status = self.set_member_status(2)
         membership.save()
+
+    def verify_member_in_project(self, user_id, project_id):
+        user_obj = UserClass()
+        user = user_obj.get_user_by_id(user_id)
+
+        project = self.get_project_by_id(project_id)
+
+        verify_member = self.get_project_member(project, user)
+
+        if verify_member == None:
+            raise UserError('User is not a member of the project!', '400')

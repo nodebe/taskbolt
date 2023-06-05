@@ -1,3 +1,4 @@
+from user.utils import is_access_token_valid
 from .classes import UserClass
 from .classes import ProjectClass
 from taskbolt.schemas import ErrorResponse, SuccessResponse
@@ -16,6 +17,10 @@ def create_project(request, payload:CreateProjectSchema):
     data = payload.dict()
 
     try:
+        access_token = request.auth.token
+        if not data['user_id'] == is_access_token_valid(access_token):
+            raise UserError('Unauthorised action!', '400')
+        
         project_obj = ProjectClass()
         create_project = project_obj.create_project(data)
     
@@ -38,6 +43,10 @@ def create_project(request, payload:CreateProjectSchema):
 @router.get('/projects/{user_id}', auth=JWTStatelessUserAuthentication())
 def get_projects(request, user_id:str):
     try:
+        access_token = request.auth.token
+        if not user_id == is_access_token_valid(access_token):
+            raise UserError('Unauthorised action!', '400')
+        
         user_obj = UserClass()
         user = user_obj.get_user_by_id(user_id)
 
@@ -49,6 +58,12 @@ def get_projects(request, user_id:str):
                 projects = list(get_projects)
             )
         )
+
+    except UserError as e:
+        response = ErrorResponse(
+            msg=str(e)
+        ).dict()
+        return JsonResponse(response, status=e.code)
     
     except Exception as e:
         response = ErrorResponse(
@@ -61,10 +76,16 @@ def get_projects(request, user_id:str):
 @router.get('/project/{user_id}/{project_id}', auth=JWTStatelessUserAuthentication())
 def get_project(request, user_id:str, project_id:str):
     try:
+        access_token = request.auth.token
+        if not user_id == is_access_token_valid(access_token):
+            raise UserError('Unauthorised action!', '400')
+        
         user_obj = UserClass()
         user = user_obj.get_user_by_id(user_id)
 
         get_user_projects = ProjectClass().get_projects_ids_by_user(user)
+
+        # Make a flat list of the get_user_projects i.e remove it from the iternal tuples they are returned as
         flat_get_user_projects = list(itertools.chain.from_iterable(get_user_projects))
 
         if project_id not in flat_get_user_projects:

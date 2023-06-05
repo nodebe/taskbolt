@@ -10,3 +10,6 @@ class SectionResponseSchema(Schema):
     id: str
     project_id: str
     title: str
+
+class SectionsResponseSchema(Schema):
+    sections: List[SectionResponseSchema]
