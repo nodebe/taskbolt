@@ -1,4 +1,4 @@
-from typing import Optional, List, Tuple
+from typing import List
 from ninja import Schema, Field
 from pydantic import EmailStr
 from datetime import datetime
@@ -11,14 +11,23 @@ class CreateProjectSchema(Schema):
     members: List[EmailStr]
 
 
-class ProjectStatusEnum(IntEnum):
-    active = 1
-    archived = 2
+# class ProjectStatusEnum(IntEnum):
+#     active = 1
+#     archived = 2
 
+class ProjectStatus(Schema):
+    id: int
+    status: str
 
 class ProjectResponseSchema(Schema):
     id: str
     name: str
     description: str
     created_at: datetime
-    status: ProjectStatusEnum
+    status: ProjectStatus
+
+class ProjectsResponseSchema(Schema):
+    projects: List[ProjectResponseSchema]
+
+class GetProjectsSchema(Schema):
+    user_id: str

@@ -15,6 +15,19 @@ class ProjectClass:
         membership = ProjectMember.objects.filter(project=project, user=user).first()
 
         return membership
+    
+    def get_projects_by_user(self, user):
+        projects_ids = self.get_projects_ids_by_user(user)
+
+        projects = Project.objects.filter(id__in=projects_ids).all()
+
+        return projects
+
+    def get_projects_ids_by_user(self, user):
+        # Get projects that a user has access to
+        projects_ids = ProjectMember.objects.filter(user=user, invite_status=2).values_list('project_id')
+
+        return projects_ids
 
     def create_project(self, data:dict):
         # Fetch details of creator of project
