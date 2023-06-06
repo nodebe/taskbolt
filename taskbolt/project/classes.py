@@ -16,12 +16,25 @@ class ProjectClass:
 
         return membership
     
+    def get_project_members(self, project_id):
+        project = self.get_project_by_id(project_id)
+        project_members_ids = self.get_users_ids_by_project(project)
+
+        members = User.objects.filter(id__in=project_members_ids)
+
+        return members
+    
     def get_projects_by_user(self, user):
         projects_ids = self.get_projects_ids_by_user(user)
 
         projects = Project.objects.filter(id__in=projects_ids).all()
 
         return projects
+
+    def get_users_ids_by_project(self, project):
+        user_ids = ProjectMember.objects.filter(project=project, invite_status=2).values_list('user_id')
+
+        return user_ids
 
     def get_projects_ids_by_user(self, user):
         # Get projects that a user has access to
@@ -113,8 +126,10 @@ class ProjectClass:
         user = user_obj.get_user_by_id(user_id)
 
         project = self.get_project_by_id(project_id)
+        if project == None:
+            raise UserError('Project does not exist!', '404')
 
         verify_member = self.get_project_member(project, user)
 
         if verify_member == None:
-            raise UserError('User is not a member of the project!', '400')
+            raise UserError('Not a member of the project!', '400')

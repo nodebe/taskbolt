@@ -4,7 +4,7 @@ from .classes import ProjectClass
 from taskbolt.schemas import ErrorResponse, SuccessResponse
 from taskbolt.errors import UserError
 from django.http import JsonResponse
-from .schemas import CreateProjectSchema, ProjectResponseSchema, ProjectsResponseSchema
+from .schemas import CreateProjectSchema, ProjectMembersSchema, ProjectResponseSchema, ProjectsResponseSchema
 from ninja import Router
 from ninja_jwt.authentication import JWTStatelessUserAuthentication
 import itertools
@@ -102,6 +102,43 @@ def get_project(request, user_id:str, project_id:str):
             )
         )
     
+    except UserError as e:
+        response = ErrorResponse(
+            msg=str(e)
+        ).dict()
+        return JsonResponse(response, status=e.code)
+    
+    except Exception as e:
+        response = ErrorResponse(
+            msg=str(e)
+        ).dict()
+        return JsonResponse(response, status='500')
+
+    return JsonResponse(response.dict(), status='200')
+
+@router.get('/members/{user_id}/{project_id}', auth=JWTStatelessUserAuthentication())
+def get_project_members(request, user_id:str, project_id:str):
+    try:
+        access_token = request.auth.token
+        if not user_id == is_access_token_valid(access_token):
+            raise UserError('Unauthorised action!', '400')
+        
+        # Get project members
+        # Check if user_id is in project members
+        # Return project members
+
+        project_obj = ProjectClass()
+        project = project_obj.verify_member_in_project(user_id, project_id)
+
+        project_members = project_obj.get_project_members(project_id)
+
+        # Serialize the response to return the created user id
+        response = SuccessResponse(
+            data=ProjectMembersSchema(
+                members = list(project_members)
+            )
+        )
+        
     except UserError as e:
         response = ErrorResponse(
             msg=str(e)

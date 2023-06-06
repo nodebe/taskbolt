@@ -32,3 +32,13 @@ class ProjectsResponseSchema(Schema):
 
 class GetProjectsSchema(Schema):
     user_id: str
+
+class ProjectMemberSchema(Schema):
+    id: str
+    username: str
+    firstname: str
+    lastname: str
+    email: str
+
+class ProjectMembersSchema(Schema):
+    members: List[ProjectMemberSchema]
