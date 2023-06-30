@@ -1,4 +1,3 @@
-from project.classes import ProjectClass
 from taskbolt.schemas import ErrorResponse, SuccessResponse
 from taskbolt.errors import UserError
 from django.http import JsonResponse

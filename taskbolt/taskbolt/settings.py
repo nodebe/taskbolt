@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'user.apps.UserConfig',
     'project.apps.ProjectConfig',
     'section.apps.SectionConfig',
+    'task.apps.TaskConfig',
 
     # 3rd Party
     'rest_framework',
