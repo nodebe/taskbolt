@@ -6,7 +6,7 @@ TaskBolt is a gamified project management tool designed to help teams track task
 
 ## Live Link
 
-Use this link [Live Link](taskbolt.vercel.app) to view the presentation of the AMNID application.
+Use this link [Live Link](https://taskbolt.vercel.app) to view the presentation of the AMNID application.
 
 ## FIGMA design
 
